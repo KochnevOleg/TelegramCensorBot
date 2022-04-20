@@ -1,0 +1,2 @@
+botName: NeDushniBot
+token: 5318974698:AAHVLDThln8JHMCKlnBE3c7UPQHie-ICB6Q
