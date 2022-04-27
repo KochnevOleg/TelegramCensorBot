@@ -1,39 +1,83 @@
 import com.vdurmont.emoji.EmojiParser;
-import lombok.SneakyThrows;
 import org.telegram.telegrambots.bots.TelegramLongPollingBot;
+import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
+import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.Update;
-import org.telegram.telegrambots.meta.api.objects.User;
+import org.telegram.telegrambots.meta.exceptions.TelegramApiException;
 
 
-public class Bot  extends TelegramLongPollingBot {
-    private final String botName = "NeDushniBot";
-    private final String botToken = "5318974698:AAHVLDThln8JHMCKlnBE3c7UPQHie-ICB6Q";
+public class Bot extends TelegramLongPollingBot {
 
     @Override
     public String getBotUsername() {
-        return botName;
+        return "NeDushniBot";
     }
 
     @Override
     public String getBotToken() {
-        return botToken;
+        return "5318974698:AAHVLDThln8JHMCKlnBE3c7UPQHie-ICB6Q";
     }
 
     @Override
-    @SneakyThrows
     public void onUpdateReceived(Update update) {
-        String incomeMsg = EmojiParser.removeAllEmojis(update.getMessage().getText().toLowerCase());
-        String chatID = update.getMessage().getChatId().toString();
 
-        if (UpdateHandler.isContainTargetTag(incomeMsg)){
-            execute(UpdateHandler.sendPoll(UpdateHandler.getListOfTargetTags(incomeMsg), chatID));
+        if (update.hasMessage()) {
+            String incomeMsg = EmojiParser.removeAllEmojis(update.getMessage().getText().toLowerCase());
+            String chatID = update.getMessage().getChatId().toString();
+            int msgID = update.getMessage().getMessageId();
+            String userName = update.getMessage().getFrom().getUserName();
+            String userLastName = update.getMessage().getFrom().getLastName();
+            String userFirstName = update.getMessage().getFrom().getFirstName();
+
+            MessageHandler messageHandler = new MessageHandler(incomeMsg, chatID, msgID, userName, userFirstName, userLastName);
+            try {
+                execute(messageHandler.handleMessage());
+            } catch (TelegramApiException e) {
+                e.printStackTrace();
+            }
+
+            if(messageHandler.isContainStopWord()) {
+                try {
+                    execute(DeleteMessage.builder()
+                            .chatId(chatID)
+                            .messageId(msgID)
+                            .build());
+                } catch (TelegramApiException e) {
+                    e.printStackTrace();
+                }
+            }
         }
 
-        if(UpdateHandler.isContainStopWord(incomeMsg)) {
-            String user = update.getMessage().getFrom().getUserName();
-            int msgID = update.getMessage().getMessageId();
-            execute(UpdateHandler.deleteMsg(chatID, msgID));
-            execute(UpdateHandler.sendMessage(chatID, "Здесь было душнильское сообщение! \nДушнить пытался @" + user + "."));
+        if (update.hasCallbackQuery()) {
+            CallbackQueryHandler callbackQueryHandler = new CallbackQueryHandler(update.getCallbackQuery());
+
+            if (update.getCallbackQuery().getData().equals("yes")) {
+                callbackQueryHandler.handleYesCallback();
+                if (FileWorker.getYesAnswersCount(update.getMessage().getMessageId()) == 7) {
+                    try {
+                        execute(SendMessage.builder()
+                                .chatId(String.valueOf(update.getMessage().getChatId()))
+                                .text("По результатам голосования слово\"" + callbackQueryHandler.getStopWord() +
+                                        "\" признано душнильским и отправляется в стоп-лист.")
+                                .build());
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
+                    }
+                } else if (update.getCallbackQuery().getData().equals("no")) {
+                    callbackQueryHandler.handleNoCallback();
+                    if (FileWorker.getNoAnswersCount(update.getMessage().getMessageId()) == 7) {
+                        try {
+                            execute(SendMessage.builder()
+                                    .chatId(String.valueOf(update.getMessage().getChatId()))
+                                    .text("По результатам голосования слово\"" + callbackQueryHandler.getStopWord() +
+                                            "\" не признано душнильским, используем на здоровье.")
+                                    .build());
+                        } catch (TelegramApiException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                }
+            }
         }
     }
 }
