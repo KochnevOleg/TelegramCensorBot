@@ -24,7 +24,6 @@ public class CallbackQueryHandler {
 
         if(yesCallback == 7){
             FileWorker.toStopListTransfer(stopWord);
-            FileWorker.removeFromPollContainer(pollResult);
         }
     }
 

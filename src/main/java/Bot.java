@@ -36,7 +36,7 @@ public class Bot extends TelegramLongPollingBot {
                 e.printStackTrace();
             }
 
-            if(messageHandler.isContainStopWord()) {
+            if (messageHandler.isContainStopWord()) {
                 try {
                     execute(DeleteMessage.builder()
                             .chatId(chatID)
@@ -53,28 +53,30 @@ public class Bot extends TelegramLongPollingBot {
 
             if (update.getCallbackQuery().getData().equals("yes")) {
                 callbackQueryHandler.handleYesCallback();
-                if (FileWorker.getYesAnswersCount(update.getMessage().getMessageId()) == 7) {
+                if (FileWorker.getYesAnswersCount(update.getCallbackQuery().getMessage().getMessageId()) == 7) {
+                    FileWorker.removeFromPollContainer(String.valueOf(update.getCallbackQuery().getMessage().getMessageId()));
                     try {
                         execute(SendMessage.builder()
-                                .chatId(String.valueOf(update.getMessage().getChatId()))
-                                .text("По результатам голосования слово\"" + callbackQueryHandler.getStopWord() +
+                                .chatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()))
+                                .text("❌По результатам голосования слово \"" + callbackQueryHandler.getStopWord() +
                                         "\" признано душнильским и отправляется в стоп-лист.")
                                 .build());
                     } catch (TelegramApiException e) {
                         e.printStackTrace();
                     }
-                } else if (update.getCallbackQuery().getData().equals("no")) {
-                    callbackQueryHandler.handleNoCallback();
-                    if (FileWorker.getNoAnswersCount(update.getMessage().getMessageId()) == 7) {
-                        try {
-                            execute(SendMessage.builder()
-                                    .chatId(String.valueOf(update.getMessage().getChatId()))
-                                    .text("По результатам голосования слово\"" + callbackQueryHandler.getStopWord() +
-                                            "\" не признано душнильским, используем на здоровье.")
-                                    .build());
-                        } catch (TelegramApiException e) {
-                            e.printStackTrace();
-                        }
+                }
+            } else if (update.getCallbackQuery().getData().equals("no")) {
+                callbackQueryHandler.handleNoCallback();
+                if (FileWorker.getNoAnswersCount(update.getCallbackQuery().getMessage().getMessageId()) == 7) {
+                    FileWorker.removeFromPollContainer(String.valueOf(update.getCallbackQuery().getMessage().getMessageId()));
+                    try {
+                        execute(SendMessage.builder()
+                                .chatId(String.valueOf(update.getCallbackQuery().getMessage().getChatId()))
+                                .text("✅По результатам голосования слово\"" + callbackQueryHandler.getStopWord() +
+                                        "\" не признано душнильским, используем на здоровье.")
+                                .build());
+                    } catch (TelegramApiException e) {
+                        e.printStackTrace();
                     }
                 }
             }

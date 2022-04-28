@@ -206,7 +206,7 @@ public class FileWorker {
     }
 
     protected static int getYesAnswersCount(int msgID) {
-        String[] pollResult = getPollResult(String.valueOf(msgID)).split("");
+        String[] pollResult = getPollResult(String.valueOf(msgID)).split(" ");
         return Integer.parseInt(pollResult[1]);
     }
 

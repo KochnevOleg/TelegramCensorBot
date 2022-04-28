@@ -1,5 +1,4 @@
 import org.telegram.telegrambots.meta.api.methods.send.SendMessage;
-import org.telegram.telegrambots.meta.api.methods.updatingmessages.DeleteMessage;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.InlineKeyboardMarkup;
 import org.telegram.telegrambots.meta.api.objects.replykeyboard.buttons.InlineKeyboardButton;
 
@@ -61,7 +60,7 @@ public class MessageHandler {
                     .replyMarkup(InlineKeyboardMarkup.builder().keyboard(buttons).build())
                     .build();
 
-//            FileWorker.toPollContainerWriter(msgID + 1); // TODO костыль с +1
+            FileWorker.toPollContainerWriter(msgID + 1); // TODO костыль с +1
         } else if (this.isContainStopWord()) {
             if (userName == null && userLastName != null) {
                 sm = SendMessage.builder()
