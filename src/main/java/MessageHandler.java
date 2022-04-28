@@ -61,21 +61,22 @@ public class MessageHandler {
                     .build();
 
             FileWorker.toPollContainerWriter(msgID + 1); // TODO костыль с +1
+            FileWorker.targetTransfer(tag, "targetTags.txt", "inPollingProcess.txt");
         } else if (this.isContainStopWord()) {
             if (userName == null && userLastName != null) {
                 sm = SendMessage.builder()
                         .chatId(chatID)
-                        .text("Здесь было душнильское сообщение! \nДушнить пытался " + userFirstName + " " + userLastName + ".")
+                        .text("Здесь было душнильское сообщение! \nДушнить пытался \uD83D\uDC13 " + userFirstName + " " + userLastName + ".")
                         .build();
             } else if (userName != null) {
                 sm = SendMessage.builder()
                         .chatId(chatID)
-                        .text("Здесь было душнильское сообщение! \nДушнить пытался @" + userName + ".")
+                        .text("Здесь было душнильское сообщение! \nДушнить пытался \uD83D\uDC13 @" + userName + ".")
                         .build();
             } else {
                 sm = SendMessage.builder()
                         .chatId(chatID)
-                        .text("Здесь было душнильское сообщение! \nДушнить пытался " + userFirstName + ".")
+                        .text("Здесь было душнильское сообщение! \nДушнить пытался \uD83D\uDC13 " + userFirstName + ".")
                         .build();
             }
         }

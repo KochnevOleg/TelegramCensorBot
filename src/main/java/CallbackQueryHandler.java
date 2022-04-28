@@ -23,7 +23,8 @@ public class CallbackQueryHandler {
         FileWorker.pollContainerUpdate(pollResultToWrite);
 
         if (yesCallback == 7) {
-            FileWorker.toStopListTransfer(stopWord);
+            FileWorker.targetTransfer(stopWord, "targetTags.txt", "stopList.txt");
+            FileWorker.removeFromPollingProcess(stopWord);
         }
     }
 
@@ -40,7 +41,7 @@ public class CallbackQueryHandler {
         FileWorker.pollContainerUpdate(pollResultToWrite);
 
         if (noCallback == 7) {
-            FileWorker.removeFromTargetTags(stopWord);
+            FileWorker.removeFromPollingProcess(stopWord);
         }
     }
 

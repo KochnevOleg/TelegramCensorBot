@@ -47,10 +47,9 @@ public class FileWorker {
         return targetTag;
     }
 
-    protected static void toStopListTransfer(String stopWord) {
+    protected static void targetTransfer(String stopWord, String from, String to) {
         Set<String> stopList = new TreeSet<>();
-        String path = "stopList.txt";
-        File file = new File(path);
+        File file = new File(to);
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
@@ -61,7 +60,7 @@ public class FileWorker {
             e.printStackTrace();
         }
 
-        try (FileWriter fw = new FileWriter(path)) {
+        try (FileWriter fw = new FileWriter(to)) {
             for (String word : stopList) {
                 fw.write(word + "\n");
             }
@@ -70,8 +69,7 @@ public class FileWorker {
         }
 
         Set<String> targetTags = new TreeSet<>();
-        String pathTarget = "targetTags.txt";
-        File targetTagsFile = new File(pathTarget);
+        File targetTagsFile = new File(from);
 
         try (Scanner scanner1 = new Scanner(targetTagsFile)) {
             while (scanner1.hasNextLine()) {
@@ -83,7 +81,7 @@ public class FileWorker {
 
         targetTags.removeIf(word -> word.equals(stopWord));
 
-        try (FileWriter fw1 = new FileWriter(pathTarget)) {
+        try (FileWriter fw1 = new FileWriter(from)) {
             for (String word : targetTags) {
                 fw1.write(word + "\n");
             }
@@ -94,35 +92,27 @@ public class FileWorker {
 
 
     protected static void toPollContainerWriter(int K) {
-        String path = "pollContainer.txt";
-
-        try (FileWriter fw = new FileWriter(path)) {
-            String newPoll = K + " " + 0 + " " + 0;
-            fw.write(newPoll);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-
-    protected static String getPollResult(String msgID) {
-        String pollResult = null;
+        Set<String> pollContainer = new TreeSet<>();
         String path = "pollContainer.txt";
         File file = new File(path);
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
-                String nextLine = scanner.nextLine();
-                String[] split = nextLine.split(" ");
-                if (split[0].equals(msgID)) {
-                    pollResult = nextLine;
-                    break;
-                }
+                pollContainer.add(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
-        return pollResult;
+
+        pollContainer.add(K + " " + 0 + " " + 0);
+
+        try (FileWriter fw = new FileWriter(path)) {
+            for (String string : pollContainer) {
+                fw.write(string + "\n");
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 
     protected static void pollContainerUpdate(String pollResultToWrite) {
@@ -156,6 +146,27 @@ public class FileWorker {
     }
 
 
+    protected static String getPollResult(String msgID) {
+        String pollResult = null;
+        String path = "pollContainer.txt";
+        File file = new File(path);
+
+        try (Scanner scanner = new Scanner(file)) {
+            while (scanner.hasNextLine()) {
+                String nextLine = scanner.nextLine();
+                String[] split = nextLine.split(" ");
+                if (split[0].equals(msgID)) {
+                    pollResult = nextLine;
+                    break;
+                }
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        }
+        return pollResult;
+    }
+
+
     public static void removeFromPollContainer(String pollResult) {
         Set<String> pollContainer = new TreeSet<>();
         String path = "pollContainer.txt";
@@ -181,23 +192,23 @@ public class FileWorker {
         }
     }
 
-    public static void removeFromTargetTags(String stopWord) {
-        Set<String> targetTags = new TreeSet<>();
-        String path = "targetTags.txt";
+    public static void removeFromPollingProcess(String stopWord) {
+        Set<String> inPollingProcess = new TreeSet<>();
+        String path = "inPollingProcess.txt";
         File file = new File(path);
 
         try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
-                targetTags.add(scanner.nextLine());
+                inPollingProcess.add(scanner.nextLine());
             }
         } catch (FileNotFoundException e) {
             e.printStackTrace();
         }
 
-        targetTags.remove(stopWord);
+        inPollingProcess.remove(stopWord);
 
         try (FileWriter fw = new FileWriter(path)) {
-            for (String string : targetTags) {
+            for (String string : inPollingProcess) {
                 fw.write(string + "\n");
             }
         } catch (IOException e) {
