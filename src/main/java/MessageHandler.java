@@ -51,7 +51,7 @@ public class MessageHandler {
             List<List<InlineKeyboardButton>> buttons = new ArrayList<>();
             buttons.add(
                     Arrays.asList((InlineKeyboardButton.builder().text("Да").callbackData("yes").build()),
-                                   InlineKeyboardButton.builder().text("Нет").callbackData("no").build()));
+                            InlineKeyboardButton.builder().text("Нет").callbackData("no").build()));
 
             sm = SendMessage.builder()
                     .chatId(String.valueOf(chatID))

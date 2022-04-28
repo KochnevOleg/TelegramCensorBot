@@ -12,17 +12,17 @@ public class CallbackQueryHandler {
         String stopWord = callbackQuery.getMessage().getText().split(" ")[7];
 
         String pollResult = FileWorker.getPollResult(callbackQuery.getMessage().getMessageId().toString());
-        String [] pollResultSplit = pollResult.split(" ");
+        String[] pollResultSplit = pollResult.split(" ");
 
-            int yesCallback = Integer.parseInt(pollResultSplit[1]);
-            yesCallback++;
-            pollResultSplit[1] = String.valueOf(yesCallback);
+        int yesCallback = Integer.parseInt(pollResultSplit[1]);
+        yesCallback++;
+        pollResultSplit[1] = String.valueOf(yesCallback);
 
-            String pollResultToWrite = pollResultSplit[0] + " " + pollResultSplit[1] + " " + pollResultSplit[2];
+        String pollResultToWrite = pollResultSplit[0] + " " + pollResultSplit[1] + " " + pollResultSplit[2];
 
-            FileWorker.pollContainerUpdate(pollResultToWrite);
+        FileWorker.pollContainerUpdate(pollResultToWrite);
 
-        if(yesCallback == 7){
+        if (yesCallback == 7) {
             FileWorker.toStopListTransfer(stopWord);
         }
     }
@@ -31,18 +31,22 @@ public class CallbackQueryHandler {
         String stopWord = callbackQuery.getMessage().getText().split(" ")[7];
         String[] pollResultSplit = FileWorker.getPollResult(callbackQuery.getMessage().getMessageId().toString()).split(" ");
 
-            int noCallback = Integer.parseInt(pollResultSplit[2]);
+        int noCallback = Integer.parseInt(pollResultSplit[2]);
         noCallback++;
-            pollResultSplit[2] = String.valueOf(noCallback);
+        pollResultSplit[2] = String.valueOf(noCallback);
 
-            if (noCallback == 7) {
-                FileWorker.removeFromTargetTags(stopWord);
-            }
-        }
+        String pollResultToWrite = pollResultSplit[0] + " " + pollResultSplit[1] + " " + pollResultSplit[2];
 
-        public String getStopWord() {
-        String[] msg = callbackQuery.getMessage().getText().split(" ");
-        return msg[7];
+        FileWorker.pollContainerUpdate(pollResultToWrite);
+
+        if (noCallback == 7) {
+            FileWorker.removeFromTargetTags(stopWord);
         }
     }
+
+    public String getStopWord() {
+        String[] msg = callbackQuery.getMessage().getText().split(" ");
+        return msg[7];
+    }
+}
 

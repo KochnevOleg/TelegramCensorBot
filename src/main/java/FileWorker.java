@@ -96,7 +96,7 @@ public class FileWorker {
     protected static void toPollContainerWriter(int K) {
         String path = "pollContainer.txt";
 
-        try (FileWriter fw = new FileWriter(path)){
+        try (FileWriter fw = new FileWriter(path)) {
             String newPoll = K + " " + 0 + " " + 0;
             fw.write(newPoll);
         } catch (IOException e) {
@@ -161,7 +161,7 @@ public class FileWorker {
         String path = "pollContainer.txt";
         File file = new File(path);
 
-        try (Scanner scanner = new Scanner(file)){
+        try (Scanner scanner = new Scanner(file)) {
             while (scanner.hasNextLine()) {
                 pollContainer.add(scanner.nextLine());
             }
@@ -211,7 +211,7 @@ public class FileWorker {
     }
 
     protected static int getNoAnswersCount(int msgID) {
-        String[] pollResult = getPollResult(String.valueOf(msgID)).split("");
+        String[] pollResult = getPollResult(String.valueOf(msgID)).split(" ");
         return Integer.parseInt(pollResult[2]);
     }
 }
